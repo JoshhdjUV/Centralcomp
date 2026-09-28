@@ -99,7 +99,7 @@ git push origin main
 - Go to **Actions** tab to see the build progress
 - Once complete, your site will be live at:
   ```
-  https://joshhdju.github.io/Centralcomp/scoreboard.html
+  https://joshhdjuv.github.io/Centralcomp/
   ```
 
 ---
@@ -143,7 +143,7 @@ cp .env.example .env
 npm run build
 
 # 4. Open the built file
-# The file will be in: dist/scoreboard.html
+# The file will be in: dist/index.html
 # Open it in your browser to test
 ```
 

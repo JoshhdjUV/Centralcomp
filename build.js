@@ -55,7 +55,7 @@ if (!fs.existsSync(distDir)) {
 }
 
 // Write the configured file
-const outputPath = path.join(distDir, 'scoreboard.html');
+const outputPath = path.join(distDir, 'index.html');
 fs.writeFileSync(outputPath, configured, 'utf8');
 
 console.log('✅ Build successful!');
