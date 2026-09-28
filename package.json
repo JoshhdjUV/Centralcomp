@@ -1,0 +1,12 @@
+{
+  "name": "competition-scoreboard",
+  "version": "1.0.0",
+  "description": "TV-friendly competition scoreboard",
+  "scripts": {
+    "build": "node build.js",
+    "deploy": "npm run build"
+  },
+  "keywords": ["scoreboard", "competition", "leaderboard"],
+  "author": "",
+  "license": "MIT"
+}

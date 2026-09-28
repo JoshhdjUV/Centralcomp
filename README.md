@@ -20,7 +20,29 @@ The scoreboard is located at `client/public/scoreboard.html` and can be:
 
 ## Configuration
 
-### Before Deploying
+### Method 1: Environment Variables (Recommended)
+
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` and add your values:
+   ```env
+   SCOREBOARD_API_KEY=your-api-key-here
+   SCOREBOARD_API_URL=https://your-api-domain.com/api/public/competition/scoreboard
+   ```
+
+3. Build the configured scoreboard:
+   ```bash
+   npm run build
+   ```
+
+4. Deploy the `dist/scoreboard.html` file
+
+**Note**: `.env` is in `.gitignore` and won't be committed to Git.
+
+### Method 2: Direct Configuration
 
 Open `client/public/scoreboard.html` and add your configuration:
 
@@ -33,9 +55,9 @@ Open `client/public/scoreboard.html` and add your configuration:
 
 Place this script **before** the closing `</body>` tag or at the top of the file.
 
-### Alternative: Query Parameter Method
+### Method 3: Query Parameter (Testing Only)
 
-You can also pass the API key via URL:
+Pass the API key via URL:
 
 ```
 https://your-domain.com/scoreboard.html?key=your-api-key-here
@@ -98,15 +120,70 @@ For optimal TV display:
 4. **Dedicated account**: Use a separate user account with no notifications
 5. **Hide cursor**: Use a browser extension or system setting to auto-hide the cursor
 
-## Free Hosting Options
+## Deployment
 
-- **[Netlify](https://www.netlify.com/)**: Drag and drop deployment (free tier)
-- **[Vercel](https://vercel.com/)**: Deploy from Git (free tier)
-- **[GitHub Pages](https://pages.github.com/)**: Commit to `gh-pages` branch (free)
-- **[Cloudflare Pages](https://pages.cloudflare.com/)**: Deploy from Git (free tier)
+### Netlify
+
+1. Push your code to GitHub
+2. Connect your repo in Netlify dashboard
+3. Go to **Site settings** → **Environment variables**
+4. Add:
+   - `SCOREBOARD_API_KEY`: your-key-here
+   - `SCOREBOARD_API_URL`: https://your-api.com/...
+5. Deploy! Netlify will run `npm run build` automatically
+
+Configuration: `netlify.toml` is already set up.
+
+### Vercel
+
+1. Push your code to GitHub
+2. Import your repo in Vercel dashboard
+3. Go to **Settings** → **Environment Variables**
+4. Add the same variables as above
+5. Deploy! Vercel will run the build command automatically
+
+Configuration: `vercel.json` is already set up.
+
+### GitHub Pages (with GitHub Actions)
+
+1. Go to your repo → **Settings** → **Secrets and variables** → **Actions**
+2. Add repository secrets:
+   - `SCOREBOARD_API_KEY`: your-key-here
+   - `SCOREBOARD_API_URL`: https://your-api.com/...
+3. Push to `main` branch - GitHub Actions will automatically build and deploy
+4. Enable GitHub Pages: **Settings** → **Pages** → Source: `gh-pages` branch
+
+Configuration: `.github/workflows/deploy.yml` is already set up.
+
+### Cloudflare Pages
+
+1. Connect your GitHub repo
+2. Set build command: `npm run build`
+3. Set build output: `dist`
+4. Add environment variables in dashboard
+5. Deploy!
+
+### Local Testing
+
+```bash
+# Install dependencies (if needed)
+npm install
+
+# Build with your .env file
+npm run build
+
+# Open dist/scoreboard.html in your browser
+```
+
+## Free Hosting Options Summary
+
+All these platforms support environment variables and custom domains:
+
+- **[Netlify](https://www.netlify.com/)**: Free tier, auto-deploy from Git
+- **[Vercel](https://vercel.com/)**: Free tier, auto-deploy from Git  
+- **[GitHub Pages](https://pages.github.com/)**: Free with GitHub Actions
+- **[Cloudflare Pages](https://pages.cloudflare.com/)**: Free tier, auto-deploy from Git
 - **AWS S3 + CloudFront**: Static hosting (~$0.50/month)
-
-All support custom domains via CNAME.
 
 ## Troubleshooting
 

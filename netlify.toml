@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Environment variables should be set in Netlify dashboard:
+# Settings → Environment variables → Add a variable
+# SCOREBOARD_API_KEY = your-key-here
+# SCOREBOARD_API_URL = https://your-api.com/api/public/competition/scoreboard
