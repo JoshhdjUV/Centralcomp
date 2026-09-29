@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+  # Rebuild periodically so the embedded snapshot stays fresh while
+  # browser → API CORS / ?key= support is limited on API Gateway.
+  schedule:
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write

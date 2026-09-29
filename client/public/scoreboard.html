@@ -269,6 +269,8 @@
     // Option A: Embedded configuration (recommended)
     const API_KEY = window.SCOREBOARD_API_KEY || '';
     const API_URL = window.SCOREBOARD_API_URL || '/api/public/competition/scoreboard';
+    // Injected at build time when the API is reachable from CI (bypasses browser CORS)
+    const BUILD_SNAPSHOT = null;
     
     // Option B: Read from query parameter (less secure)
     const params = new URLSearchParams(window.location.search);
@@ -288,17 +290,24 @@
     async function fetchScoreboard() {
       try {
         if (!FINAL_API_KEY) {
+          if (BUILD_SNAPSHOT) {
+            displayScoreboard(BUILD_SNAPSHOT);
+            return;
+          }
           throw new Error('API key not configured. Please set SCOREBOARD_API_KEY or provide ?key=... parameter.');
         }
 
-        // Pass key as query param (not X-Embed-Api-Key) so the browser skips CORS preflight.
-        // API Gateway's OPTIONS allow-list does not include X-Embed-Api-Key, which blocks
-        // GitHub Pages → meetings.upvolt.tech. Meeting Calendar accepts ?key= on this route.
+        // Live browser fetch uses ?key= (simple request, no CORS preflight).
+        // Until Meeting Calendar serves ?key= in prod, BUILD_SNAPSHOT from CI is the fallback.
         const url = new URL(API_URL, window.location.href);
         url.searchParams.set('key', FINAL_API_KEY);
         const response = await fetch(url.toString(), { method: 'GET' });
 
         if (!response.ok) {
+          if (BUILD_SNAPSHOT) {
+            displayScoreboard(BUILD_SNAPSHOT);
+            return;
+          }
           if (response.status === 401) {
             throw new Error('Invalid API key');
           } else if (response.status === 404) {
@@ -311,6 +320,10 @@
         const data = await response.json();
         displayScoreboard(data);
       } catch (error) {
+        if (BUILD_SNAPSHOT) {
+          displayScoreboard(BUILD_SNAPSHOT);
+          return;
+        }
         displayError(error.message);
         console.error('Error fetching scoreboard:', error);
       }
@@ -318,7 +331,8 @@
 
     // Display the scoreboard
     function displayScoreboard(data) {
-      if (!data.competition || data.competition.status !== 'active') {
+      // API returns active, else draft, else latest — show any of those on the TV board
+      if (!data.competition) {
         leaderboardEl.innerHTML = `
           <div class="no-competition">
             No active competition at this time
@@ -331,7 +345,10 @@
       }
 
       // Update header
-      competitionNameEl.textContent = data.competition.name || 'Competition';
+      const statusLabel = data.competition.status && data.competition.status !== 'active'
+        ? ` (${data.competition.status})`
+        : '';
+      competitionNameEl.textContent = (data.competition.name || 'Competition') + statusLabel;
       
       const startDate = formatDate(data.competition.startDate);
       const endDate = formatDate(data.competition.endDate);
