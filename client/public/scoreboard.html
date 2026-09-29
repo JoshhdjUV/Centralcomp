@@ -291,13 +291,12 @@
           throw new Error('API key not configured. Please set SCOREBOARD_API_KEY or provide ?key=... parameter.');
         }
 
-        const response = await fetch(API_URL, {
-          method: 'GET',
-          headers: {
-            'X-Embed-Api-Key': FINAL_API_KEY,
-            'Content-Type': 'application/json'
-          }
-        });
+        // Pass key as query param (not X-Embed-Api-Key) so the browser skips CORS preflight.
+        // API Gateway's OPTIONS allow-list does not include X-Embed-Api-Key, which blocks
+        // GitHub Pages → meetings.upvolt.tech. Meeting Calendar accepts ?key= on this route.
+        const url = new URL(API_URL, window.location.href);
+        url.searchParams.set('key', FINAL_API_KEY);
+        const response = await fetch(url.toString(), { method: 'GET' });
 
         if (!response.ok) {
           if (response.status === 401) {
